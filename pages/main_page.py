@@ -1,8 +1,9 @@
+import allure
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
 class MainPage(BasePage):
-    # Локаторы вопросов о важном
+    # Вопросы о важном (8 штук)
     QUESTION_LOCATORS = [
         (By.ID, "accordion__heading-0"),
         (By.ID, "accordion__heading-1"),
@@ -24,44 +25,43 @@ class MainPage(BasePage):
         (By.ID, "accordion__panel-7"),
     ]
 
-    # Кнопки заказа
-    ORDER_BUTTON_TOP = (By.XPATH, "//button[contains(@class, 'Button_Button__ra12g') and text()='Заказать']")
-    ORDER_BUTTON_BOTTOM = (By.XPATH, "//button[contains(@class, 'Button_Button__ra12g') and text()='Заказать']")
+    # Кнопки заказа (уточнённые)
+    ORDER_BUTTON_TOP = (By.XPATH, "//div[contains(@class, 'Header_Nav')]//button[text()='Заказать']")
+    ORDER_BUTTON_BOTTOM = (By.XPATH, "//div[contains(@class, 'Home_FinishButton')]//button[text()='Заказать']")
 
-    # Логотипы
     SCOOTER_LOGO = (By.CLASS_NAME, "Header_LogoScooter__3lsAR")
     YANDEX_LOGO = (By.CLASS_NAME, "Header_LogoYandex__3TSOI")
-
-    # Cookie‑консент
     COOKIE_ACCEPT_BUTTON = (By.XPATH, "//div[contains(@class, 'App_CookieConsent')]//button[contains(text(), 'да все привыкли')]")
 
+    @allure.step("Клик по вопросу {index}")
     def click_question(self, index):
-        """Клик по вопросу с указанным индексом (0-7)"""
+        question = self.find_element(self.QUESTION_LOCATORS[index])
+        self.driver.execute_script("arguments[0].scrollIntoView();", question)
         self.click_element(self.QUESTION_LOCATORS[index])
 
+    @allure.step("Получение текста ответа на вопрос {index}")
     def get_answer_text(self, index):
-        """Получить текст ответа для вопроса"""
         return self.get_text(self.ANSWER_LOCATORS[index])
 
+    @allure.step("Клик по верхней кнопке 'Заказать'")
     def click_order_button_top(self):
-        """Клик по верхней кнопке 'Заказать'"""
         self.click_element(self.ORDER_BUTTON_TOP)
 
+    @allure.step("Клик по нижней кнопке 'Заказать'")
     def click_order_button_bottom(self):
-        """Клик по нижней кнопке 'Заказать'"""
         self.click_element(self.ORDER_BUTTON_BOTTOM)
 
+    @allure.step("Клик по логотипу 'Самокат'")
     def click_scooter_logo(self):
-        """Клик по логотипу Самоката"""
         self.click_element(self.SCOOTER_LOGO)
 
+    @allure.step("Клик по логотипу 'Яндекс'")
     def click_yandex_logo(self):
-        """Клик по логотипу Яндекса"""
         self.click_element(self.YANDEX_LOGO)
 
+    @allure.step("Закрытие cookie‑консента")
     def accept_cookies(self):
-        """Закрыть всплывающее окно с согласием на cookie"""
         try:
             self.click_element(self.COOKIE_ACCEPT_BUTTON)
         except:
-            pass  # Если окна нет, просто продолжаем
+            pass
